@@ -36,7 +36,7 @@ func main() {
 			}
 
 			text := message.Text
-			if text != "ارسال پیام" && text != "ارسال رزومه" && user.Status == USER_DEFAULT {
+			if text != "/cancel" && text != "ارسال پیام" && text != "ارسال رزومه" && user.Status == USER_DEFAULT {
 				bot.SendMessage(message.Sender, "برای ثبت دیدگاه خود لطفا روی گزینه 'ارسال پیام' کلیک نمایید"+"\n"+"برای ارسال رزومه خود به کمیته فنی ،‌ روی گزینه 'ارسال رزومه' کلیک کنید", &telebot.SendOptions{
 					ReplyMarkup: telebot.ReplyMarkup{
 						CustomKeyboard: [][]string{
@@ -50,7 +50,7 @@ func main() {
 			} else if text == "ارسال پیام" { // ارسال پیام
 				user.Status = USER_REPORT
 				user.Save()
-				bot.SendMessage(message.Sender, "متن خود را بنویسید سپس ارسال کنید ، کمیته فنی پیام شما را خواهد خواند", &telebot.SendOptions{
+				bot.SendMessage(message.Sender, "متن خود را بنویسید سپس ارسال کنید ، کمیته فنی پیام شما را خواهد خواند"+"\n\n"+"در صورت انصراف روی گزینه /cancel کلیک کنید", &telebot.SendOptions{
 					ReplyMarkup: telebot.ReplyMarkup{
 						HideCustomKeyboard: true,
 					},
@@ -58,11 +58,24 @@ func main() {
 			} else if text == "ارسال رزومه" { // ارسال رزومه
 				user.Status = USER_RESUME
 				user.Save()
-				bot.SendMessage(message.Sender, "رزومه خود را بنویسید سپس ارسال کنید ، کمیته فنی آن را بررسی خواهد کرد", &telebot.SendOptions{
+				bot.SendMessage(message.Sender, "رزومه خود را بنویسید سپس ارسال کنید ، کمیته فنی آن را بررسی خواهد کرد"+"\n\n"+"در صورت انصراف روی گزینه /cancel کلیک کنید", &telebot.SendOptions{
 					ReplyMarkup: telebot.ReplyMarkup{
 						HideCustomKeyboard: true,
 					},
 				})
+			} else if text == "/cancel" {
+				bot.SendMessage(message.Sender, "برای ثبت دیدگاه خود لطفا روی گزینه 'ارسال پیام' کلیک نمایید"+"\n"+"برای ارسال رزومه خود به کمیته فنی ،‌ روی گزینه 'ارسال رزومه' کلیک کنید", &telebot.SendOptions{
+					ReplyMarkup: telebot.ReplyMarkup{
+						CustomKeyboard: [][]string{
+							{
+								"ارسال پیام", "ارسال رزومه",
+							},
+						},
+						ResizeKeyboard: true,
+					},
+				})
+				user.Status = USER_DEFAULT
+				user.Save()
 			} else {
 				for _, admin := range admins {
 					userAdmin := telebot.User{ID: admin}
